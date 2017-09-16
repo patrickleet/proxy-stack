@@ -4,15 +4,16 @@ networks:
 
   proxy:
     external: true
-    driver: overlay
 
 volumes:
 
   le-certs:
     driver: cloudstor:aws
+    external: false
 
   dfp-certs:
     driver: cloudstor:aws
+    external: false
 
 services:
 

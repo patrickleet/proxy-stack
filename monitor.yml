@@ -49,11 +49,15 @@ services:
           - node.role == manager
 
 volumes:
+
   monitor:
     driver: cloudstor:aws
+    external: false
 
 networks:
+
   monitor:
     external: true
+
   proxy:
     external: true
