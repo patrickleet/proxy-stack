@@ -11,10 +11,6 @@ volumes:
     driver: cloudstor:aws
     external: false
 
-  dfp-certs:
-    driver: cloudstor:aws
-    external: false
-
 services:
 
   proxy:
@@ -29,10 +25,6 @@ services:
       - LISTENER_ADDRESS=swarm-listener
       - MODE=swarm
       - CONNECTION_MODE=http-keep-alive
-    volumes:
-      # create a dedicated volumes for dfp /certs folder.
-      # certificates stored in this folder will be automatically loaded during proxy start.
-      - dfp-certs:/certs
     deploy:
       replicas: 3
       resources:
@@ -69,11 +61,15 @@ services:
       - proxy
     environment:
       - DF_PROXY_SERVICE_NAME=proxy_proxy
-      - LOG=debug
+      # - LOG=debug
       # - CERTBOT_OPTIONS=--staging
     volumes:
+      # link docker socket to activate secrets support.
+      - /var/run/docker.sock:/var/run/docker.sock
       # create a dedicated volume for letsencrypt folder.
-      # You will be able to link this volume to another service that also needs certificates
+      # MANDATORY to keep persistent certificates on DFPLE.
+      # Without this volume, certificates will be regenerated every time DFPLE is recreated.
+      # OPTIONALY you will be able to link this volume to another service that also needs certificates (gitlab/gitlab-ce for example)
       - le-certs:/etc/letsencrypt
     deploy:
       replicas: 1
