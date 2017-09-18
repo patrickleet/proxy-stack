@@ -9,6 +9,7 @@ services:
     environment:
       - GLOBAL_SCRAPE_INTERVAL=10s
       - ARG_WEB_EXTERNAL-URL=http://${MONITOR_DOMAIN:-localhost}
+      - ARG_ALERTMANAGER_URL=http://alertmanager:9093
     networks:
       - proxy
       - monitor
@@ -28,6 +29,23 @@ services:
           memory: 500M
         limits:
           memory: 800M
+
+  alertmanager:
+    image: prom/alertmanager
+    networks:
+      - monitor
+    secrets:
+      - alert_manager_config
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
+      resources:
+        reservations:
+          memory: 256M
+        limits:
+          memory: 512M
+    command: -config.file=/run/secrets/alert_manager_config -storage.path=/alertmanager
 
   swarm-listener:
     image: vfarcic/docker-flow-swarm-listener
@@ -60,4 +78,10 @@ networks:
     external: true
 
   proxy:
+    external: true
+
+
+secrets:
+
+  alert_manager_config:
     external: true
