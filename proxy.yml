@@ -34,6 +34,7 @@ services:
       # certificates stored in this folder will be automatically loaded during proxy start.
       - dfp-certs:/certs
     deploy:
+      replicas: 3
       resources:
         reservations:
           memory: 128M
