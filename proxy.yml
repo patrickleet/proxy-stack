@@ -26,6 +26,9 @@ services:
       - MODE=swarm
       - CONNECTION_MODE=http-keep-alive
     deploy:
+      update_config:
+        parallelism: 1
+        delay: 20s
       replicas: 3
       resources:
         reservations:
