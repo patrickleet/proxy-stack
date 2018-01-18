@@ -5,12 +5,6 @@ networks:
   proxy:
     external: true
 
-volumes:
-
-  le-certs:
-    driver: cloudstor:aws
-    external: false
-
 services:
 
   proxy:
@@ -25,10 +19,13 @@ services:
       - LISTENER_ADDRESS=swarm-listener
       - MODE=swarm
       - CONNECTION_MODE=http-keep-alive
+    secrets:
+      - dfp_users_admin
     deploy:
-      update_config:
-        parallelism: 1
-        delay: 20s
+      labels:
+        - com.df.alertName=memlimit
+        - com.df.alertIf=@service_mem_limit:0.8
+        - com.df.alertFor=30s
       replicas: 3
       resources:
         reservations:
@@ -46,8 +43,8 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      - DF_NOTIFY_CREATE_SERVICE_URL=http://proxy_ssl:8080/v1/docker-flow-proxy-letsencrypt/reconfigure
-      - DF_NOTIFY_REMOVE_SERVICE_URL=http://proxy_proxy:8080/v1/docker-flow-proxy/remove
+      - DF_NOTIFY_CREATE_SERVICE_URL=http://proxy:8080/v1/docker-flow-proxy/reconfigure
+      - DF_NOTIFY_REMOVE_SERVICE_URL=http://proxy:8080/v1/docker-flow-proxy/remove
     deploy:
       resources:
         reservations:
@@ -58,34 +55,6 @@ services:
         constraints:
           - node.role == manager
 
-  ssl:
-    image: nib0r/docker-flow-proxy-letsencrypt
-    networks:
-      - proxy
-    environment:
-      - DF_PROXY_SERVICE_NAME=proxy_proxy
-      # - LOG=debug
-      # - CERTBOT_OPTIONS=--staging
-    volumes:
-      # link docker socket to activate secrets support.
-      - /var/run/docker.sock:/var/run/docker.sock
-      # create a dedicated volume for letsencrypt folder.
-      # MANDATORY to keep persistent certificates on DFPLE.
-      # Without this volume, certificates will be regenerated every time DFPLE is recreated.
-      # OPTIONALY you will be able to link this volume to another service that also needs certificates (gitlab/gitlab-ce for example)
-      - le-certs:/etc/letsencrypt
-    deploy:
-      replicas: 1
-      labels:
-        - com.df.notify=true
-        - com.df.distribute=true
-        - com.df.servicePath=/.well-known/acme-challenge
-        - com.df.port=8080
-      resources:
-        reservations:
-          memory: 60M
-        limits:
-          memory: 100M
-      placement:
-        constraints:
-          - node.role == manager
+secrets:
+  dfp_users_admin:
+    external: true

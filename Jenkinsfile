@@ -1,6 +1,10 @@
 pipeline {
   agent {
-    label "docker"
+    label "prod"
+  }
+  options {
+    buildDiscarder(logRotator(numToKeepStr: '2'))
+    disableConcurrentBuilds()
   }
   stages {
     stage("notify") {
