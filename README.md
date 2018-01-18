@@ -8,12 +8,16 @@ You will need to create a secret to be used for basic authentication of private 
 The password needs to be encrypted. To make things more complicated, it needs to be encrypted
 using a linux OS, cause the one on Mac doesn't work. I tried. 
 
-So the easiest way to do this is running a Docker container.
+So the easiest way to do this is running a Docker container or actually ssh'd into the swarm.
 
+In a container:
 ```
 docker run -it --rm alpine ash
 # you will enter into the container's shell
+```
 
+Encrypt Password:
+```
 mkpasswd -m sha-512 replaceThisWithYourPassword
 ```
 
