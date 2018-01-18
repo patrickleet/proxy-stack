@@ -13,3 +13,5 @@ cd proxy-stack
 sh init.sh && sh deploy.sh
 ```
 
+---
+To learn more about this stack, visit https://www.microservicedriven.com
