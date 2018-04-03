@@ -21,6 +21,8 @@ services:
       - CONNECTION_MODE=http-keep-alive
     secrets:
       - dfp_users_admin
+      - dfp_stats_user
+      - dfp_stats_pass
     deploy:
       labels:
         - com.df.alertName=memlimit
@@ -56,5 +58,12 @@ services:
           - node.role == manager
 
 secrets:
+
   dfp_users_admin:
+    external: true
+
+  dfp_stats_user:
+    external: true
+
+  dfp_stats_pass:
     external: true
