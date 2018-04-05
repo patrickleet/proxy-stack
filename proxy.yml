@@ -39,7 +39,7 @@ services:
           - node.role == worker
 
   swarm-listener:
-    image: vfarcic/docker-flow-swarm-listener:${DFPSL:-18.03.17-38}
+    image: vfarcic/docker-flow-swarm-listener:${DFPSL:-18.04.04-4}
     networks:
       - proxy
     volumes:
